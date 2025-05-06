@@ -1,4 +1,7 @@
 import sys
+from resource import *
+import time
+import psutil
 
 def InputGen(fileName):
     base1 = ''
@@ -15,7 +18,7 @@ def InputGen(fileName):
     with open(fileName, 'r') as file:
         for line in file:
             line  = line.strip()
-            print(line)
+            #print(line)
             if isFirst: # parsing base 1
                 base1 = line
                 isFirst = False
@@ -40,7 +43,7 @@ def InputGen(fileName):
 
     return (base1, base2)
             
-if __name__ == '__main__':
+def main():
     string1, string2 = InputGen(sys.argv[1])
 
     # all mismatch values
@@ -78,4 +81,61 @@ if __name__ == '__main__':
             
     OPT = dp[m][n]
 
+    rstring1 = ''
+    rstring2 = ''
+
+    while m>0 and n>0:
+        
+        if dp[m][n] == dp[m-1][n-1] + misMatch[string1[m-1] + string2[n-1]]:
+            rstring1 = string1[m-1] + rstring1
+            rstring2 = string2[n-1] + rstring2
+            m-=1
+            n-=1
+        elif dp[m][n] == dp[m][n-1] + delta:
+            rstring1 = '_' + rstring1
+            rstring2 =  string2[n-1] + rstring2
+            n-=1
+        else:
+            rstring1 = string1[m-1] + rstring1
+            rstring2 = '_' + rstring2
+            m-=1
     
+    while m>0:
+        rstring1 = string1[m-1] + rstring1
+        rstring2 = '_' + rstring2
+        m-=1
+    while n>0:
+        rstring1 = '_' + rstring1
+        rstring2 =  string2[n-1] + rstring2
+        n-=1
+
+    # print(OPT)
+    # print(rstring1)
+    # print(rstring2)
+
+    with open(sys.argv[2], 'w') as f:
+        f.write(str(OPT) + '\n')
+        f.write(str(rstring1) + '\n')
+        f.write(str(rstring2) + '\n')
+
+def process_memory () :
+    process = psutil . Process ()
+    memory_info = process . memory_info ()
+    memory_consumed = int ( memory_info . rss /1024)
+    return memory_consumed
+
+def time_wrapper () :
+    start_time = time . time ()
+    main () # Replace with your algorithm function call
+    end_time = time . time ()
+    time_taken = ( end_time - start_time ) *1000
+    return time_taken
+
+if __name__ == '__main__':
+    tim = time_wrapper()
+    mem = process_memory()
+    # print(tim)
+    # print(mem)
+    with open(sys.argv[2], 'a') as f:
+        f.write(str(tim) + '\n')
+        f.write(str(mem) + '\n')

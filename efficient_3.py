@@ -46,22 +46,138 @@ def InputGen(fileName):
 def DivideAndConquer(x, y):
     m, n = len(x), len(y)
 
+    if m == 0:
+        return (n * delta, n * '_', y) 
+    if n == 0:
+        return (m * delta, x, m * '_')
+    
+    if m < 5 or n < 5:
+        dp = [[0] * (n + 1) for _ in range(m+1)]
+
+        for i in range(1, m+1):
+            dp[i][0] = i * delta
+        
+        for j in range(1, n+1):
+            dp[0][j] = j * delta
+
+        for i in range(1, m+1):
+            for j in range(1, n+1):
+                dp[i][j] = min(dp[i-1][j-1] + misMatch[x[i-1] + y[j-1]],
+                            dp[i-1][j] + delta, 
+                            dp[i][j-1] + delta)
+        
+        OPT = dp[m][n]
+
+        rx = ''
+        ry = ''
+
+        while m>0 and n>0:
+            
+            if dp[m][n] == dp[m-1][n-1] + misMatch[x[m-1] + y[n-1]]:
+                rx = x[m-1] + rx
+                ry = y[n-1] + ry
+                m-=1
+                n-=1
+            elif dp[m][n] == dp[m][n-1] + delta:
+                rx = '_' + rx
+                ry =  y[n-1] + ry
+                n-=1
+            else:
+                rx = x[m-1] + rx
+                ry = '_' + ry
+                m-=1
+        
+        while m>0:
+            rx = x[m-1] + rx
+            ry = '_' + ry
+            m-=1
+        while n>0:
+            rx = '_' + rx
+            ry =  y[n-1] + ry
+            n-=1
+
+        return (OPT, rx, ry)
+    
+    
     x_l = x[:m//2]
     x_r = x[m//2:]
 
-    print(x_l)
-    print(x_r)
-    print(y)
+    # print(x_l)
+    # print(x_r)
+    # print(y)
 
     # Divide 
     ix = OptSplitPoint(x_l, x_r, y)
-    print(ix)
+    # print(ix)
     # Conquer
+    y_l = y[:ix]
+    y_r = y[ix:]
+    lval, lresx, lresy = DivideAndConquer(x_l, y_l)
+    rval, rresx, rresy = DivideAndConquer(x_r, y_r)
 
     # Merge
+    return (lval+rval, lresx + rresx, lresy + rresy)
 
 def OptSplitPoint(x_l, x_r, y):
 
+    m = len(y)
+    n1 = len(x_l)
+    
+    ldp = [[0] * (2) for _ in range(m+1)]
+
+    for i in range(1, m+1):
+        ldp[i][0] = i * delta
+
+    for j in range(1, n1+1):
+        ldp[0][1] = j * delta
+        for i in range(1, m+1):
+            ldp[i][1] = min(ldp[i-1][0] + misMatch[y[i-1] + x_l[j-1]],
+                           ldp[i-1][1] + delta, 
+                           ldp[i][0] + delta)
+        for i in range(0, m+1):
+            ldp[i][0] = ldp[i][1]
+
+    
+    x_r = x_r[::-1]
+    y = y[::-1]
+
+    n2 = len(x_r)
+    rdp = [[0] * (2) for _ in range(m+1)]
+
+    for i in range(1, m+1):
+        rdp[i][0] = i * delta
+
+    for j in range(1, n2+1):
+        rdp[0][1] = j * delta
+        for i in range(1, m+1):
+            rdp[i][1] = min(rdp[i-1][0] + misMatch[y[i-1] + x_r[j-1]],
+                           rdp[i-1][1] + delta, 
+                           rdp[i][0] + delta)
+        for i in range(0, m+1):
+            rdp[i][0] = rdp[i][1]
+    
+
+    ix = -1
+    mi = float('inf')
+
+    for i in range(m+1):
+        inter = ldp[i][1] + rdp[m - i][1]
+
+        if inter < mi:
+            mi = inter 
+            ix = i
+
+    return ix
+
+
+def main():
+    x, y = InputGen(sys.argv[1])
+    val, x, y = DivideAndConquer(x, y)
+    print(val)
+    print(x)
+    print(y)
+
+if __name__ == '__main__':
     # all mismatch values
     misMatch = {}
     misMatch['AA'] = 0
@@ -77,61 +193,4 @@ def OptSplitPoint(x_l, x_r, y):
 
     # delta
     delta = 30
-
-    m = len(y)
-    n1 = len(x_l)
-    
-    ldp = [[0] * (n1 + 1) for _ in range(m+1)]
-
-    for i in range(1, m+1):
-        ldp[i][0] = i * delta
-    
-    for j in range(1, n1+1):
-        ldp[0][j] = j * delta
-
-    for i in range(1, m+1):
-        for j in range(1, n1+1):
-            ldp[i][j] = min(ldp[i-1][j-1] + misMatch[y[i-1] + x_l[j-1]],
-                           ldp[i-1][j] + delta, 
-                           ldp[i][j-1] + delta)
-            
-
-    
-    x_r = x_r[::-1]
-    y = y[::-1]
-
-    n2 = len(x_r)
-    rdp = [[0] * (n2 + 1) for _ in range(m+1)]
-
-    for i in range(1, m+1):
-        rdp[i][0] = i * delta
-    
-    for j in range(1, n2+1):
-        rdp[0][j] = j * delta
-
-    for i in range(1, m+1):
-        for j in range(1, n2+1):
-            rdp[i][j] = min(rdp[i-1][j-1] + misMatch[y[i-1] + x_r[j-1]],
-                           rdp[i-1][j] + delta, 
-                           rdp[i][j-1] + delta)
-    
-
-    ix = -1
-    mi = float('inf')
-
-    for i in range(m+1):
-        inter = ldp[i][n1] + rdp[m - i][n2]
-
-        if inter < mi:
-            mi = inter 
-            ix = i
-
-    return ix
-
-
-def main():
-    x, y = InputGen(sys.argv[1])
-    DivideAndConquer(x, y)
-
-if __name__ == '__main__':
     main()

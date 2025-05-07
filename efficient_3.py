@@ -102,18 +102,21 @@ def DivideAndConquer(x, y):
     x_l = x[:m//2]
     x_r = x[m//2:]
 
-    # print(x_l)
-    # print(x_r)
-    # print(y)
-
     # Divide 
     ix = OptSplitPoint(x_l, x_r, y)
     # print(ix)
     # Conquer
     y_l = y[:ix]
     y_r = y[ix:]
-    lval, lresx, lresy = DivideAndConquer(x_l, y_l)
-    rval, rresx, rresy = DivideAndConquer(x_r, y_r)
+    if len(x_l) > len(y_l):
+        lval, lresx, lresy = DivideAndConquer(x_l, y_l)
+    else:
+        lval, lresy, lresx = DivideAndConquer(y_l, x_l)
+
+    if len(x_r) > len(y_r):
+        rval, rresx, rresy = DivideAndConquer(x_r, y_r)
+    else:
+        rval, rresy, rresx = DivideAndConquer(y_r, x_r)
 
     # Merge
     return (lval+rval, lresx + rresx, lresy + rresy)
@@ -172,7 +175,11 @@ def OptSplitPoint(x_l, x_r, y):
 
 def main():
     x, y = InputGen(sys.argv[1])
-    val, x, y = DivideAndConquer(x, y)
+    if len(x) > len(y):
+        val, x, y = DivideAndConquer(x, y)
+    else:
+        val, y, x = DivideAndConquer(y, x)
+
     print(val)
     print(x)
     print(y)

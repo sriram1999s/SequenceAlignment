@@ -177,6 +177,19 @@ def main():
     print(x)
     print(y)
 
+def process_memory () :
+    process = psutil . Process ()
+    memory_info = process . memory_info ()
+    memory_consumed = int ( memory_info . rss /1024)
+    return memory_consumed
+
+def time_wrapper () :
+    start_time = time . time ()
+    main () # Replace with your algorithm function call
+    end_time = time . time ()
+    time_taken = ( end_time - start_time ) *1000
+    return time_taken
+
 if __name__ == '__main__':
     # all mismatch values
     misMatch = {}
@@ -193,4 +206,7 @@ if __name__ == '__main__':
 
     # delta
     delta = 30
-    main()
+    tim = time_wrapper()
+    mem = process_memory()
+    print(tim)
+    print(mem)

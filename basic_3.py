@@ -43,8 +43,7 @@ def InputGen(fileName):
 
     return (base1, base2)
             
-def main():
-    string1, string2 = InputGen(sys.argv[1])
+def main(string1, string2):
 
     # all mismatch values
     misMatch = {}
@@ -113,10 +112,7 @@ def main():
     # print(rstring1)
     # print(rstring2)
 
-    with open(sys.argv[2], 'w') as f:
-        f.write(str(OPT) + '\n')
-        f.write(str(rstring1) + '\n')
-        f.write(str(rstring2) + '\n')
+    return (OPT, rstring1, rstring2)
 
 def process_memory () :
     process = psutil . Process ()
@@ -124,18 +120,23 @@ def process_memory () :
     memory_consumed = int ( memory_info . rss /1024)
     return memory_consumed
 
-def time_wrapper () :
+def time_wrapper (string1, string2) :
     start_time = time . time ()
-    main () # Replace with your algorithm function call
+    OPT, rstring1, rstring2 = main (string1, string2) # Replace with your algorithm function call
     end_time = time . time ()
     time_taken = ( end_time - start_time ) *1000
-    return time_taken
+    return (time_taken, OPT, rstring1, rstring2)
 
 if __name__ == '__main__':
-    tim = time_wrapper()
+
+    string1, string2 = InputGen(sys.argv[1])
+    tim, OPT, rstring1, rstring2 = time_wrapper(string1, string2)
     mem = process_memory()
     # print(tim)
     # print(mem)
-    with open(sys.argv[2], 'a') as f:
+    with open(sys.argv[2], 'w') as f:
+        f.write(str(OPT) + '\n')
+        f.write(str(rstring1) + '\n')
+        f.write(str(rstring2) + '\n')
         f.write(str(tim) + '\n')
         f.write(str(mem) + '\n')

@@ -173,16 +173,13 @@ def OptSplitPoint(x_l, x_r, y):
     return ix
 
 
-def main():
-    x, y = InputGen(sys.argv[1])
+def main(x, y):
     if len(x) > len(y):
         val, x, y = DivideAndConquer(x, y)
     else:
         val, y, x = DivideAndConquer(y, x)
 
-    print(val)
-    print(x)
-    print(y)
+    return (val, x, y)
 
 def process_memory () :
     process = psutil . Process ()
@@ -190,12 +187,12 @@ def process_memory () :
     memory_consumed = int ( memory_info . rss /1024)
     return memory_consumed
 
-def time_wrapper () :
+def time_wrapper (x, y) :
     start_time = time . time ()
-    main () # Replace with your algorithm function call
+    val, x, y = main (x, y) # Replace with your algorithm function call
     end_time = time . time ()
     time_taken = ( end_time - start_time ) *1000
-    return time_taken
+    return (time_taken, val, x, y)
 
 if __name__ == '__main__':
     # all mismatch values
@@ -213,7 +210,13 @@ if __name__ == '__main__':
 
     # delta
     delta = 30
-    tim = time_wrapper()
+
+    x, y = InputGen(sys.argv[1])
+    tim, val, x, y = time_wrapper(x, y)
     mem = process_memory()
-    print(tim)
-    print(mem)
+    with open(sys.argv[2], 'w') as f:
+        f.write(str(val) + '\n')
+        f.write(str(x) + '\n')
+        f.write(str(y) + '\n')
+        f.write(str(tim) + '\n')
+        f.write(str(mem) + '\n')

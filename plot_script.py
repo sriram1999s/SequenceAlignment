@@ -47,8 +47,8 @@ if __name__ == '__main__':
 
     # Plot memory comparison
     plt.figure(figsize=(10, 5))
-    plt.plot(total_str_lens_values,basic_mem_values, 'o-', label='Basic Time')
-    plt.plot(total_str_lens_values,efficient_mem_values, 'o-', label='Efficient Time')
+    plt.plot(total_str_lens_values,basic_mem_values, 'o-', label='Basic Memory')
+    plt.plot(total_str_lens_values,efficient_mem_values, 'o-', label='Efficient Memory')
     plt.xlabel("Total String Length")
     plt.ylabel("Memory")
     plt.title("Memory vs. Total String Length")
